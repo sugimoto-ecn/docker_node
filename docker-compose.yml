@@ -1,0 +1,36 @@
+version: "3.0"
+services:
+    mysql:
+        image: mysql:5.7
+        env_file: ./docker/mysql/mysql.env
+        environment:
+            - TZ=Asia/Tokyo
+        ports:
+            - '3306:3360'
+        volumes:
+            - ./mysql/conf:/etc/mysql/conf.d/:ro
+            - mysqldata:/var/lib/mysql
+        networks:
+            - backend
+    app:
+        build: 
+            context: ./docker/app
+        environment:
+            - DEBUG=app:*
+        env_file: ./mysuke/server/.env
+        tty: true
+        ports:
+            - '3000:3000'
+        volumes:
+            - ./mysuke/server:/app
+        command: npm run dev
+        networks:
+            - backend
+        depends_on:
+            - mysql
+networks:
+    backend:
+
+volumes:
+    mysqldata:
+                    
